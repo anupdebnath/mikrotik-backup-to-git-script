@@ -1,10 +1,12 @@
 # Using Git for MikroTik Configuration Backup
 
-Using Git for MikroTik configuration backup can help you maintain version control over configuration changes and provide a simple way to track, revert, and document these changes over time. While MikroTik does not natively support Git, you can implement a solution using a combination of MikroTik's scripting. You will need a remote Server for this automation.
+This guide helps you set up a solution for backing up MikroTik configurations using Git. By integrating MikroTik's scripting capabilities with Git, you can maintain version control over configuration changes, track, revert, and document these changes over time.
 
-## Configure MikroTik to Push Configurations to the Server
+While MikroTik does not natively support Git, we can implement this solution by pushing configuration backups to a remote server, where they are automatically committed and pushed to a Git repository.
 
-Change following parameters
+## Step 1: Configure MikroTik to Push Configurations to the Remote Server
+
+Create a MikroTik script that exports the device configuration and pushes it to the remote server via SFTP. You'll need to change the following parameters according to your setup:
 
 | Parameters            | Description                                                                         |
 | --------------------- | ----------------------------------------------------------------------------------- |
@@ -24,7 +26,7 @@ source="/export file=config show-sensitive;\
     \n/tool fetch url=sftp://{{SFTP_SERVER_ADDRESS}} mode=sftp user={{SFTP_USERNAME}} password={{SFTP_PASSWORD}} src-path={{CONFIG_FILENAME}} dst-path={{REMOTE_PATH}}/{{REMOTE_FILENAME}} upload=yes"
 ```
 
-Then create a scheduler using following
+Schedule the Script to Run Daily. You can also change the `interval` according to your setup. [Scheduler Documentation](https://help.mikrotik.com/docs/display/ROS/Scheduler)
 
 ```
 /system scheduler
@@ -35,17 +37,26 @@ add interval=1d name=daily-config-backup \
     start-time=00:00:00
 ```
 
-## Set Up a Remote Server for Automation
+## Step 2: Set Up a Remote Server for Automation (Optional)
 
-I recommend you to creat a new user on your remote server with limited privileges. This user should only have access to the repository.
+On the remote server, create a new user with limited privileges. This user should have access only to the Git repository directory where the backups will be stored.
 
-## Automate Git Commit and Push on the Remote Server
+## Step 3: Automate Git Commit and Push on the Remote Server
 
-Create a script on your remote server that will automate the commit and push process. This script should periodically pull the latest configuration from the MikroTik device and commit it to the repository.
+Next, set up a script on the remote server to automatically commit and push the configuration files to a Git repository.
+
+Create a script on the remote server (e.g., `backup-config-to-git.sh`) that will automate the Git commit and push process.
 
 ```
+#!/bin/bash
 
-# Add the file to Git
+# Set up the git repository path
+REPO_PATH="/path/to/your/repo"
+
+# Navigate to the repository
+cd $REPO_PATH
+
+# Add config file to git
 git add config.rsc
 
 # Commit the changes with a timestamp
@@ -53,6 +64,7 @@ git commit -m "Backup config at $(date)"
 
 # Push the changes to the remote repository
 git push
+
 
 ```
 
@@ -63,19 +75,16 @@ chmod +x backup-config-to-git.sh
 
 ```
 
-Schedule the Script to Run
-Schedule the Git commit and push script using cron. Open the crontab editor:
+### Schedule the Script to Run Daily
 
-bash
+Use cron to schedule the backup script. Open the crontab editor:
 
 ```
 crontab -e
 ```
 
-Add the following line to run the script daily:
+Add the following line to run the script every day at 2 AM:
 
 ```
 0 2 * * * /path/to/backup-config-to-git.sh
 ```
-
-This will commit the MikroTik configuration to Git every day at 2 AM.
