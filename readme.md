@@ -20,7 +20,7 @@ Create a MikroTik script that exports the device configuration and pushes it to 
 ```
 /system script
 add name=export-and-send-config-to-server \
-policy=ftp,read,write,policy \
+policy=read,write,ftp \
 source="/export file=config show-sensitive;\
     \r\
     \n/tool fetch url=sftp://{{SFTP_SERVER_ADDRESS}} mode=sftp user={{SFTP_USERNAME}} password={{SFTP_PASSWORD}} src-path={{CONFIG_FILENAME}} dst-path={{REMOTE_PATH}}/{{REMOTE_FILENAME}} upload=yes"
@@ -32,7 +32,7 @@ Schedule the Script to Run Daily. You can also change the `interval` according t
 /system scheduler
 add interval=1d name=daily-config-backup \
     on-event=export-and-send-config-to-server \
-    policy=ftp,read,write,policy \
+    policy=read,write,ftp \
     start-date=2024-10-14 \
     start-time=00:00:00
 ```
@@ -45,7 +45,7 @@ On the remote server, create a new user with limited privileges. This user shoul
 
 Next, set up a script on the remote server to automatically commit and push the configuration files to a Git repository.
 
-Create a script on the remote server (e.g., `backup-config-to-git.sh`) that will automate the Git commit and push process.
+Create a script on the remote server (e.g. `backup-config-to-git.sh`) that will automate the Git commit and push process.
 
 ```
 #!/bin/bash
@@ -64,15 +64,12 @@ git commit -m "Backup config at $(date)"
 
 # Push the changes to the remote repository
 git push
-
-
 ```
 
 Make the script executable:
 
 ```
 chmod +x backup-config-to-git.sh
-
 ```
 
 ### Schedule the Script to Run Daily

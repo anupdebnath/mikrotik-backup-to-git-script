@@ -1,16 +1,12 @@
 #!/bin/bash
 
-# Set up the Git repository path
-#REPO_PATH="/path/to/your/repo"
-#CONFIG_PATH="/path/on/server/current-config.rsc"
+# Set up the git repository path
+REPO_PATH="/path/to/your/repo"
 
 # Navigate to the repository
-#cd $REPO_PATH
+cd $REPO_PATH
 
-# Copy the latest config to the repository
-#cp $CONFIG_PATH $REPO_PATH
-
-# Add the file to Git
+# Add config file to git
 git add config.rsc
 
 # Commit the changes with a timestamp
