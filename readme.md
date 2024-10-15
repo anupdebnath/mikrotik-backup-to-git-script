@@ -20,7 +20,7 @@ Create a MikroTik script that exports the device configuration and pushes it to 
 ```
 /system script
 add name=export-and-send-config-to-server \
-policy=read,write,ftp \
+policy=ftp,read,write,test \
 source="/export file=config show-sensitive;\
     \r\
     \n/tool fetch url=sftp://{{SFTP_SERVER_ADDRESS}} mode=sftp user={{SFTP_USERNAME}} password={{SFTP_PASSWORD}} src-path={{CONFIG_FILENAME}} dst-path={{REMOTE_PATH}}/{{REMOTE_FILENAME}} upload=yes"
@@ -32,7 +32,7 @@ Schedule the Script to Run Daily. You can also change the `interval` according t
 /system scheduler
 add interval=1d name=daily-config-backup \
     on-event=export-and-send-config-to-server \
-    policy=read,write,ftp \
+    policy=ftp,read,write,test \
     start-date=2024-10-14 \
     start-time=00:00:00
 ```
