@@ -9,7 +9,7 @@
 :local sftpUrl ("sftp://" . $sftpAddr . ":" . $sftpPort . $sftpDirectory . "/")
 
 ### Define export file names
-:local exportFileName ("config_" . [/system identity get name] . "_" . [:pick [/system clock get date] 0 4] . [:pick [/system clock get date] 5 7] . [:pick [/system clock get date] 8 10])
+:local exportFileName ("config_" . [/system identity get name])
 
 
 
