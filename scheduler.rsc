@@ -1,2 +1,1 @@
-/system scheduler
-add interval=1d name=config-daily-backup
+/system scheduler add interval=1d name=config-daily-backup on-event="config-daily-backup-script"

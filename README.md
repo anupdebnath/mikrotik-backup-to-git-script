@@ -1,26 +1,25 @@
-# Using Git for MikroTik Configuration Backup
+# MikroTik Configuration Backup Using Git
 
-MikroTik does not natively support Git, you can implement a solution by pushing configuration backups to a remote server, where they are automatically committed and pushed to a Git repository.
+MikroTik does not natively support Git, but you can push configuration backups to a remote server and where they are automatically committed and pushed to a Git repository.
 
-This guide will help you set up a system for backing up MikroTik configurations using Git. By doing so, you can maintain version control, track and revert configuration changes, and document these changes over time.
+This guide will help you set up a system for backing up MikroTik configurations using Git. This lets you track and revert changes easily.
 
-## Prerequisites
+### Prerequisites
 
-Create a new scheduler to run the backup script. Set your desired `interval` according to your setup. For more information, refer to the [Scheduler Documentation](https://help.mikrotik.com/docs/display/ROS/Scheduler).
+1. A remote server with [PKI Authentication Enabled](mikrotik-pki-auth.md) and a Git repository.
+2. Scheduler on your MikroTik to automate backups.
+
+## Set Up a Scheduler
+
+Create a scheduler to run the backup daily:
 
 ```mikrotik
-/system scheduler add interval=1d name=config-daily-backup
+/system scheduler add interval=1d name=config-daily-backup on-event="config-daily-backup-script"
 ```
 
-You can now either create a new script or set the On Event field in the scheduler to perform the backup.
+## Create the Config Backup Script
 
-Use the following script to export the device configuration and push it to the remote server. Make sure to modify the parameters according to your setup:
-
-| Parameters            | Description                                                                             |
-| --------------------- | --------------------------------------------------------------------------------------- |
-| `SFTP_SERVER_ADDRESS` | The address of your remote SFTP server                                                  |
-| `SFTP_USERNAME`       | The username for your remote SFTP server                                                |
-| `REMOTE_PATH`         | The path to the directory where the configuration should be stored on the remote server |
+Configure Git on your remote server then Replace `SFTP_SERVER_ADDRESS`, `SFTP_USERNAME`, and `REMOTE_PATH` with your details:
 
 ```mikrotik
 :local config ("config_" . [/system identity get name])
@@ -34,5 +33,16 @@ Use the following script to export the device configuration and push it to the r
 :delay 5s;
 /file remove ($config . ".rsc")
 } on-error={/log error "File upload failed"}
-:do {/system ssh-exec address=$sftpAddr user=$sftpUser command=("cd " . $sftpDirectory . "; git add " . $config . ".rsc; git commit -m \"" . [/system identity get name] . "\"; git push")} on-error={/log error "Git operations failed"}
+:do {/system ssh-exec address=$sftpAddr user=$sftpUser command=("cd " . $sftpDirectory . "; git add " . $config . ".rsc; git commit -m \"config backup for " . [/system identity get name] . "\"; git push")} on-error={/log error "Git operations failed"}
+```
+
+## Git Configuration
+
+On your remote server, install and configure Git if not already done. Create and init Git repository in the desired directory
+
+```bash
+mkdir REMOTE_PATH
+cd REMOTE_PATH
+git init
+
 ```

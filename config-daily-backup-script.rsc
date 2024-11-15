@@ -9,4 +9,4 @@
 :delay 5s;
 /file remove ($config . ".rsc")
 } on-error={/log error "File upload failed"}
-:do {/system ssh-exec address=$sftpAddr user=$sftpUser command=("cd " . $sftpDirectory . "; git add " . $config . ".rsc; git commit -m \"" . [/system identity get name] . "\"; git push")} on-error={/log error "Git operations failed"}
+:do {/system ssh-exec address=$sftpAddr user=$sftpUser command=("cd " . $sftpDirectory . "; git add " . $config . ".rsc; git commit -m \"config backup for " . [/system identity get name] . "\"; git push")} on-error={/log error "Git operations failed"}

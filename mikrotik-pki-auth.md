@@ -64,19 +64,3 @@ If configured correctly, MikroTik will establish the connection without promptin
 # Automate Tasks Using Scripts
 
 Now that password less SSH is enabled, you can automate tasks by creating scripts on your MikroTik router that use SSH to run commands on other devices, allowing centralized management of tasks like configuration backups, log retrieval, and system monitoring.
-
-# TL;DR
-
-Create key pair, enable password less access and copy key pair to target device.
-
-```bash
-ssh-keygen -t rsa -m PEM -f mikrotik_key -C "your comment"
-cat mikrotik_key.pub >> ~/.ssh/authorized_keys
-scp mikrotik_key* user@mikrotik_ip:/
-```
-
-Import private key to the perticular user
-
-```mikrotik
-/user ssh-keys private import user=username private-key-file=mikrotik_key
-```
