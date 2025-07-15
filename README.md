@@ -1,6 +1,6 @@
 # MikroTik Configuration Backup Using Git
 
-MikroTik does not natively support Git, but you can push configuration backups to a remote server and where they are automatically committed and pushed to a Git repository.
+MikroTik does not natively support Git, but you can push configuration backups to a remote server where they are automatically committed and pushed to a Git repository.
 
 This guide will help you set up a system for backing up MikroTik configurations using Git. This lets you track and revert changes easily.
 
@@ -19,7 +19,7 @@ Create a scheduler to run the backup daily:
 
 ## Create the Config Backup Script
 
-Configure Git on your remote server then Replace `SFTP_SERVER_ADDRESS`, `SFTP_USERNAME`, and `REMOTE_PATH` with your details:
+Configure Git on your remote server, then replace `SFTP_SERVER_ADDRESS`, `SFTP_USERNAME`, and `REMOTE_PATH` with your details:
 
 ```mikrotik
 :local config ("config_" . [/system identity get name])
@@ -38,7 +38,7 @@ Configure Git on your remote server then Replace `SFTP_SERVER_ADDRESS`, `SFTP_US
 
 ## Git Configuration
 
-On your remote server, install and configure Git if not already done. Create and init Git repository in the desired directory
+On your remote server, install and configure Git if not already done. Create and initialize a Git repository in the desired directory
 
 ```bash
 mkdir REMOTE_PATH
